@@ -1,6 +1,8 @@
 // api/receive.js
 // Called by the kiosk every 3 seconds to check for a new image
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const redis = Redis.fromEnv();
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -8,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const data = await kv.get('daap:latest');
+    const data = await redis.get('daap:latest');
 
     if (!data) {
       return res.status(200).json({ image: null, ts: null });
