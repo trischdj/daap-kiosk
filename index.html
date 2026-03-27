@@ -273,7 +273,7 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 // No credentials needed — the API routes are relative to this same Vercel deployment.
 // Just set MOBILE_URL to your Vercel domain once deployed.
-const MOBILE_URL = 'https://your-project.vercel.app/upload.html';
+const MOBILE_URL = 'https://daap-kiosk-git-main-dj-trischlers-projects.vercel.app/upload.html';
 
 // ── QR CODE ───────────────────────────────────────────────────────────────────
 function initQR() {
@@ -806,7 +806,12 @@ document.getElementById('flipbtn').addEventListener('click',()=>{
   document.getElementById('flipper').classList.toggle('flipped');
 });
 document.getElementById('regenbtn').addEventListener('click',()=>{
-  S.seed=Math.random()*9999; redraw();
+  S.seed=Math.random()*9999;
+  S.img=null;
+  const th=document.getElementById('upthumb');
+  th.style.display='none'; th.src='';
+  document.getElementById('uplbl').textContent='or drop / click to upload';
+  redraw();
 });
 document.getElementById('upin').addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
