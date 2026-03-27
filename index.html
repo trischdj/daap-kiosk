@@ -275,22 +275,17 @@
 </main>
 
 <script>
-// ── JSONBIN CONFIG ────────────────────────────────────────────────────────────
-// 1. Go to jsonbin.io → sign up free → New Bin → paste {} → Save
-// 2. Copy the Bin ID and your Master Key below
-// 3. Set the same values in daap-upload-mobile.html
-const BIN_ID  = '__DAAP_BIN_ID__';
-const API_KEY = '__DAAP_API_KEY__';
-// URL of the mobile upload page (once hosted, e.g. on Netlify)
-const MOBILE_URL = 'https://your-site.netlify.app/daap-upload-mobile.html';
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+// No credentials needed — the API routes are relative to this same Vercel deployment.
+// Just set MOBILE_URL to your Vercel domain once deployed.
+const MOBILE_URL = 'https://your-project.vercel.app/upload.html';
 
 // ── QR CODE ───────────────────────────────────────────────────────────────────
 function initQR() {
   const el = document.getElementById('qr-code');
   if (!el) return;
-  // Show placeholder if not yet configured
-  if (BIN_ID === '__DAAP_BIN_ID__') {
-    el.innerHTML = `<div style="width:120px;height:120px;background:#f0eeeb;display:flex;align-items:center;justify-content:center;font-family:var(--ui);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.35);text-align:center;padding:12px;">Configure<br>Bin ID first</div>`;
+  if (MOBILE_URL.includes('your-project')) {
+    el.innerHTML = `<div style="width:120px;height:120px;background:#f0eeeb;display:flex;align-items:center;justify-content:center;font-family:var(--ui);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.35);text-align:center;padding:12px;">Set MOBILE_URL<br>after deploy</div>`;
     return;
   }
   new QRCode(el, {
@@ -301,27 +296,21 @@ function initQR() {
   });
 }
 
-// ── POLLING — check jsonbin every 3s for a new image ─────────────────────────
+// ── POLLING — check /api/receive every 3s for a new image ────────────────────
 let lastTs = 0;
 let pollInterval = null;
 
 async function pollForImage() {
-  if (BIN_ID === '__DAAP_BIN_ID__') return;
   try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-      headers: { 'X-Master-Key': API_KEY },
-    });
+    const res = await fetch('/api/receive');
     if (!res.ok) return;
-    const json = await res.json();
-    const data = json.record;
+    const data = await res.json();
 
     if (data && data.ts && data.ts !== lastTs && data.image) {
       lastTs = data.ts;
-      // Load image into kiosk
       const img = new Image();
       img.onload = () => {
         S.img = img;
-        // Update sidebar thumb
         const th = document.getElementById('upthumb');
         if (th) { th.src = data.image; th.style.display = 'block'; }
         document.getElementById('uplbl').textContent = '✓ Image from phone';
@@ -329,7 +318,6 @@ async function pollForImage() {
         document.getElementById('poll-status').style.color = '#8FAF9F';
         S.seed = Math.random() * 9999;
         redraw();
-        // Reset status after 4s
         setTimeout(() => {
           document.getElementById('poll-status').textContent = 'Waiting for image…';
           document.getElementById('poll-status').style.color = '';

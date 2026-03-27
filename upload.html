@@ -192,11 +192,8 @@
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
-// This BIN_ID and API_KEY must match the kiosk page.
-// Replace with your own from jsonbin.io (free, takes 2 min).
-const BIN_ID  = '__DAAP_BIN_ID__';
-const API_KEY = '__DAAP_API_KEY__';
-const JSONBIN = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+// No credentials needed — posts to the same Vercel deployment this page is on.
+const SEND_URL = '/api/send';
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let imageBase64 = null;
@@ -254,18 +251,10 @@ btnSend.addEventListener('click', async () => {
   status.className = 'status';
 
   try {
-    const payload = {
-      image: imageBase64,
-      ts: Date.now(),
-      from: 'mobile',
-    };
-    const res = await fetch(JSONBIN, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': API_KEY,
-        'X-Bin-Versioning': 'false',
-      },
+    const payload = { image: imageBase64, ts: Date.now() };
+    const res = await fetch(SEND_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
