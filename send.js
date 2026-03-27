@@ -1,12 +1,12 @@
 // api/send.js
-import { Redis } from '@upstash/redis';
+const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
   url:   process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
 });
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -18,7 +18,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing image' });
     }
 
-    // Store latest image with 1 hour TTL
     await redis.set('daap:latest', { image, ts: ts || Date.now() }, { ex: 3600 });
 
     return res.status(200).json({ ok: true });
