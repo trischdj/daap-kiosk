@@ -255,6 +255,7 @@
       <button class="abtn regen" id="regenbtn">↻ Regen</button>
     </div>
     <button class="abtn" id="pdfbtn" style="background:#1a1a1a;color:#fff;width:100%;letter-spacing:0.14em;margin-top:0;">↓ Download PDF</button>
+    <button class="abtn" id="printbtn" style="background:#1a1a1a;color:#fff;width:100%;letter-spacing:0.14em;margin-top:4px;">⎙ Print</button>
   </div>
 </aside>
 
@@ -265,12 +266,6 @@
       <div class="face back"><canvas id="back"  width="1100" height="850"></canvas></div>
     </div>
   </div>
-  <div class="legend">
-    Shape complexity → <b>Program</b> &nbsp;
-    Lean + shear → <b>Wind direction</b> &nbsp;
-    Tick density → <b>Wind speed</b> &nbsp;
-    Color → <b>Program palette</b>
-  </div>
   <div class="dro" id="dro"></div>
 </main>
 
@@ -278,7 +273,7 @@
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 // No credentials needed — the API routes are relative to this same Vercel deployment.
 // Just set MOBILE_URL to your Vercel domain once deployed.
-const MOBILE_URL = 'https://daap-kiosk-git-main-dj-trischlers-projects.vercel.app/upload.html';
+const MOBILE_URL = 'https://your-project.vercel.app/upload.html';
 
 // ── QR CODE ───────────────────────────────────────────────────────────────────
 function initQR() {
@@ -722,13 +717,6 @@ function drawFront(){
 
   ctx.textAlign = 'left';
   ctx.restore();
-
-  // Data readout
-  document.getElementById('dro').innerHTML=
-    `Program → ${prog.label}<br>`+
-    `Wind → ${S.wind}mph ${dirLabel(S.windDir)}<br>`+
-    `Temp → ${S.temp}°F · ${fmtHour(S.hour)}<br>`+
-    `Filter → ${S.filter} · Seed → ${Math.floor(S.seed)}`;
 }
 
 // ── DRAW BACK ─────────────────────────────────────────────────────────────────
@@ -837,6 +825,41 @@ document.getElementById('upin').addEventListener('change',e=>{
   fr.readAsDataURL(f);
 });
 
+// ── PRINT ─────────────────────────────────────────────────────────────────────
+function printCard(){
+  const cv = document.getElementById('front');
+  const imgData = cv.toDataURL('image/jpeg', 0.96);
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html>
+<html><head><title>DAAP Thank You Card</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+  }
+  img {
+    display:block;
+    width:5.5in;
+    height:4.25in;
+    object-fit:contain;
+  }
+  @media print {
+    @page { size:landscape; margin:0.25in; }
+    body { margin:0; min-height:unset; }
+    img { width:5.5in; height:4.25in; object-fit:contain; }
+  }
+</style>
+</head><body>
+<img src="${imgData}" onload="window.print(); window.close();">
+</body></html>`);
+  win.document.close();
+}
+
+document.getElementById('printbtn').addEventListener('click', printCard);
 document.getElementById('pdfbtn').addEventListener('click', downloadPDF);
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
