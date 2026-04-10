@@ -143,14 +143,19 @@
     color: var(--label);
   }
 
-  /* QR + upload */
-  #qr-code img, #qr-code canvas { width: 130px !important; height: 130px !important; }
+  /* QR + upload — side by side to save vertical space */
+  .student-work-row {
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  #qr-code { flex-shrink: 0; background: #fff; padding: 3px; line-height: 0; }
+  #qr-code img, #qr-code canvas { width: 72px !important; height: 72px !important; }
+  .upload-col { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
   .poll-lbl {
     font-family: var(--ui); font-size: 9px; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--label);
   }
   .upzone {
-    border: 1.5px dashed rgba(0,0,0,0.2); padding: 10px;
+    border: 1.5px dashed rgba(0,0,0,0.2); padding: 8px;
     text-align: center; cursor: pointer;
     font-family: var(--ui); font-size: 10px;
     letter-spacing: 0.08em; text-transform: uppercase;
@@ -159,33 +164,27 @@
   }
   .upzone:hover { border-color: rgba(0,0,0,0.4); color: var(--text); }
   .upzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  #upthumb { width: 100%; height: 44px; object-fit: cover; margin-top: 5px; display: none; border-radius: 2px; }
+  #upthumb { width: 100%; height: 36px; object-fit: cover; margin-top: 4px; display: none; border-radius: 2px; }
 
   /* Filter pills */
   .filter-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .filter-pills .pill { padding: 8px 6px; font-size: 11px; }
 
-  /* Action buttons */
+  /* Action buttons — compact row of three */
+  .action-row { display: flex; gap: 6px; }
   .action-pill {
-    width: 100%; border: none; border-radius: 100px;
-    padding: 13px 14px;
-    font-family: var(--ui); font-size: 12px; font-weight: 900;
-    letter-spacing: 0.1em; text-transform: uppercase;
+    flex: 1; border: none; border-radius: 100px;
+    padding: 10px 8px;
+    font-family: var(--ui); font-size: 11px; font-weight: 900;
+    letter-spacing: 0.08em; text-transform: uppercase;
     cursor: pointer; transition: all 0.12s;
     -webkit-tap-highlight-color: transparent;
+    text-align: center;
   }
   .action-pill.regen { background: var(--uc-red); color: #fff; }
   .action-pill.regen:hover { background: #c0001e; }
   .action-pill.dark { background: #1a1a1a; color: #fff; }
   .action-pill.dark:hover { background: #333; }
-
-  /* Cropmarks */
-  .crop-row { display: flex; align-items: center; gap: 8px; }
-  .crop-row label {
-    font-family: var(--ui); font-size: 10px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--label); cursor: pointer;
-  }
-  input[type=checkbox] { cursor: pointer; accent-color: #111; width: 15px; height: 15px; }
 </style>
 </head>
 <body>
@@ -238,13 +237,17 @@
 
   <div class="rpanel-sect">
     <div class="rpanel-lbl">Student Work</div>
-    <div id="qr-code" style="background:#fff;padding:4px;line-height:0;"></div>
-    <div id="poll-status" class="poll-lbl">Waiting…</div>
-    <label class="upzone">
-      <div id="uplbl">+ Upload</div>
-      <input type="file" accept="image/*" id="upin">
-      <img id="upthumb" alt="">
-    </label>
+    <div class="student-work-row">
+      <div id="qr-code"></div>
+      <div class="upload-col">
+        <div id="poll-status" class="poll-lbl">Waiting…</div>
+        <label class="upzone">
+          <div id="uplbl">+ Upload</div>
+          <input type="file" accept="image/*" id="upin">
+          <img id="upthumb" alt="">
+        </label>
+      </div>
+    </div>
   </div>
 
   <div class="rpanel-sect">
@@ -269,12 +272,10 @@
   </div>
 
   <div class="rpanel-sect">
-    <button class="action-pill regen" id="regenbtn">↻ Regen</button>
-    <button class="action-pill dark" id="pdfbtn">↓ PDF</button>
-    <button class="action-pill dark" id="printbtn">⎙ Print</button>
-    <div class="crop-row">
-      <input type="checkbox" id="cropmarks">
-      <label for="cropmarks">Crop Marks</label>
+    <div class="action-row">
+      <button class="action-pill regen" id="regenbtn">↻ Regen</button>
+      <button class="action-pill dark" id="pdfbtn">PDF</button>
+      <button class="action-pill dark" id="printbtn">Print</button>
     </div>
   </div>
 
@@ -804,59 +805,22 @@ document.getElementById('upin').addEventListener('change',e=>{
   fr.readAsDataURL(f);
 });
 
-// ── PRINT ─────────────────────────────────────────────────────────────────────
 function printCard(){
   const cv = document.getElementById('front');
   const imgData = cv.toDataURL('image/jpeg', 0.96);
-  const showCrops = document.getElementById('cropmarks').checked;
-
-  // Cropmarks as inline SVG — reliable across all browsers and print engines
-  // Gap: 9pt from card edge, Mark length: 18pt, Stroke: 0.4pt
-  const G = 9;   // gap in pt
-  const M = 18;  // mark length in pt
-  const cropSVG = showCrops ? `
-  <svg style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;"
-       width="0" height="0" xmlns="http://www.w3.org/2000/svg">
-    <!-- TL -->
-    <line x1="${-(G+M)}pt" y1="0" x2="${-G}pt" y2="0" stroke="#000" stroke-width="0.4pt"/>
-    <line x1="0" y1="${-(G+M)}pt" x2="0" y2="${-G}pt" stroke="#000" stroke-width="0.4pt"/>
-    <!-- TR -->
-    <line x1="calc(6in + ${G}pt)" y1="0" x2="calc(6in + ${G+M}pt)" y2="0" stroke="#000" stroke-width="0.4pt"/>
-    <line x1="6in" y1="${-(G+M)}pt" x2="6in" y2="${-G}pt" stroke="#000" stroke-width="0.4pt"/>
-    <!-- BL -->
-    <line x1="${-(G+M)}pt" y1="4in" x2="${-G}pt" y2="4in" stroke="#000" stroke-width="0.4pt"/>
-    <line x1="0" y1="calc(4in + ${G}pt)" x2="0" y2="calc(4in + ${G+M}pt)" stroke="#000" stroke-width="0.4pt"/>
-    <!-- BR -->
-    <line x1="calc(6in + ${G}pt)" y1="4in" x2="calc(6in + ${G+M}pt)" y2="4in" stroke="#000" stroke-width="0.4pt"/>
-    <line x1="6in" y1="calc(4in + ${G}pt)" x2="6in" y2="calc(4in + ${G+M}pt)" stroke="#000" stroke-width="0.4pt"/>
-  </svg>` : '';
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
 <html><head><title>DAAP Thank You Card</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background:#fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-  }
-  .card-wrap {
-    position:relative;
-    width:6in; height:4in;
-    flex-shrink:0;
-  }
+  body { background:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .card-wrap { position:relative; width:6in; height:4in; flex-shrink:0; }
   .card-wrap img { display:block; width:6in; height:4in; object-fit:contain; }
-  @media print {
-    @page { size:landscape; margin:0.5in; }
-    body { margin:0; min-height:unset; }
-  }
+  @media print { @page { size:landscape; margin:0.5in; } body { margin:0; min-height:unset; } }
 </style>
 </head><body>
 <div class="card-wrap">
-  ${cropSVG}
   <img src="${imgData}" onload="window.print(); window.close();">
 </div>
 </body></html>`);
