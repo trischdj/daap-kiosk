@@ -146,50 +146,50 @@
     background: var(--panel);
     border-left: 1px solid var(--border);
     display: flex; flex-direction: column;
-    gap: 0; overflow: hidden;
+    overflow: hidden;
   }
   .rpanel-sect {
-    padding: 9px 12px;
+    padding: 8px 10px;
     border-bottom: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 6px;
+    display: flex; flex-direction: column; gap: 5px;
     flex-shrink: 0;
   }
   .rpanel-sect:last-child { border-bottom: none; }
   .rpanel-lbl {
-    font-family: var(--ui); font-size: 8px;
+    font-family: var(--ui); font-size: 7px;
     letter-spacing: 0.16em; text-transform: uppercase;
     color: var(--label);
   }
 
   /* QR + upload */
-  #qr-code img, #qr-code canvas { width: 100px !important; height: 100px !important; }
+  #qr-code img, #qr-code canvas { width: 72px !important; height: 72px !important; }
   .poll-lbl {
-    font-family: var(--ui); font-size: 8px; letter-spacing: 0.1em;
+    font-family: var(--ui); font-size: 7px; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--label);
   }
   .upzone {
-    border: 1.5px dashed rgba(0,0,0,0.2); padding: 8px;
+    border: 1.5px dashed rgba(0,0,0,0.2); padding: 6px;
     text-align: center; cursor: pointer;
-    font-family: var(--ui); font-size: 9px;
+    font-family: var(--ui); font-size: 8px;
     letter-spacing: 0.08em; text-transform: uppercase;
     color: var(--label); position: relative; transition: all 0.12s;
     border-radius: 4px;
   }
   .upzone:hover { border-color: rgba(0,0,0,0.4); color: var(--text); }
   .upzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  #upthumb { width: 100%; height: 36px; object-fit: cover; margin-top: 4px; display: none; border-radius: 2px; }
+  #upthumb { width: 100%; height: 28px; object-fit: cover; margin-top: 3px; display: none; border-radius: 2px; }
 
   /* Filter pills in right panel — 2 col grid */
   .filter-pills {
     display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
   }
-  .filter-pills .pill { padding: 6px 6px; font-size: 9px; }
+  .filter-pills .pill { padding: 5px 4px; font-size: 8px; }
 
   /* Action buttons */
   .action-pill {
     width: 100%; border: none; border-radius: 100px;
-    padding: 11px 12px;
-    font-family: var(--ui); font-size: 11px; font-weight: 900;
+    padding: 8px 10px;
+    font-family: var(--ui); font-size: 9px; font-weight: 900;
     letter-spacing: 0.1em; text-transform: uppercase;
     cursor: pointer; transition: all 0.12s;
     -webkit-tap-highlight-color: transparent;
@@ -202,10 +202,10 @@
   /* Cropmarks */
   .crop-row { display: flex; align-items: center; gap: 6px; }
   .crop-row label {
-    font-family: var(--ui); font-size: 9px; letter-spacing: 0.1em;
+    font-family: var(--ui); font-size: 8px; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--label); cursor: pointer;
   }
-  input[type=checkbox] { cursor: pointer; accent-color: #111; width: 14px; height: 14px; }
+  input[type=checkbox] { cursor: pointer; accent-color: #111; width: 13px; height: 13px; }
 </style>
 </head>
 <body>
@@ -830,29 +830,26 @@ function printCard(){
   const imgData = cv.toDataURL('image/jpeg', 0.96);
   const showCrops = document.getElementById('cropmarks').checked;
 
-  // Cropmarks: thin lines outside card boundary with a small gap
-  const cropCSS = showCrops ? `
-    .card-wrap::before,
-    .card-wrap::after,
-    .crop-b::before,
-    .crop-b::after,
-    .crop-r::before,
-    .crop-r::after,
-    .crop-bl::before,
-    .crop-bl::after { content:''; position:absolute; background:#000; }
-    /* TL horizontal */ .card-wrap::before { top:0; left:-0.375in; width:0.25in; height:0.4pt; }
-    /* TL vertical   */ .card-wrap::after  { top:-0.375in; left:0; width:0.4pt; height:0.25in; }
-    /* TR horizontal */ .crop-b::before    { top:0; right:-0.375in; width:0.25in; height:0.4pt; }
-    /* TR vertical   */ .crop-b::after     { top:-0.375in; right:0; width:0.4pt; height:0.25in; }
-    /* BL horizontal */ .crop-r::before    { bottom:0; left:-0.375in; width:0.25in; height:0.4pt; }
-    /* BL vertical   */ .crop-r::after     { bottom:-0.375in; left:0; width:0.4pt; height:0.25in; }
-    /* BR horizontal */ .crop-bl::before   { bottom:0; right:-0.375in; width:0.25in; height:0.4pt; }
-    /* BR vertical   */ .crop-bl::after    { bottom:-0.375in; right:0; width:0.4pt; height:0.25in; }
-  ` : '';
-
-  const cropDivs = showCrops
-    ? `<div class="crop-b"></div><div class="crop-r"></div><div class="crop-bl"></div>`
-    : '';
+  // Cropmarks as inline SVG — reliable across all browsers and print engines
+  // Gap: 9pt from card edge, Mark length: 18pt, Stroke: 0.4pt
+  const G = 9;   // gap in pt
+  const M = 18;  // mark length in pt
+  const cropSVG = showCrops ? `
+  <svg style="position:absolute;top:0;left:0;overflow:visible;pointer-events:none;"
+       width="0" height="0" xmlns="http://www.w3.org/2000/svg">
+    <!-- TL -->
+    <line x1="${-(G+M)}pt" y1="0" x2="${-G}pt" y2="0" stroke="#000" stroke-width="0.4pt"/>
+    <line x1="0" y1="${-(G+M)}pt" x2="0" y2="${-G}pt" stroke="#000" stroke-width="0.4pt"/>
+    <!-- TR -->
+    <line x1="calc(6in + ${G}pt)" y1="0" x2="calc(6in + ${G+M}pt)" y2="0" stroke="#000" stroke-width="0.4pt"/>
+    <line x1="6in" y1="${-(G+M)}pt" x2="6in" y2="${-G}pt" stroke="#000" stroke-width="0.4pt"/>
+    <!-- BL -->
+    <line x1="${-(G+M)}pt" y1="4in" x2="${-G}pt" y2="4in" stroke="#000" stroke-width="0.4pt"/>
+    <line x1="0" y1="calc(4in + ${G}pt)" x2="0" y2="calc(4in + ${G+M}pt)" stroke="#000" stroke-width="0.4pt"/>
+    <!-- BR -->
+    <line x1="calc(6in + ${G}pt)" y1="4in" x2="calc(6in + ${G+M}pt)" y2="4in" stroke="#000" stroke-width="0.4pt"/>
+    <line x1="6in" y1="calc(4in + ${G}pt)" x2="6in" y2="calc(4in + ${G+M}pt)" stroke="#000" stroke-width="0.4pt"/>
+  </svg>` : '';
 
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
@@ -868,27 +865,19 @@ function printCard(){
   }
   .card-wrap {
     position:relative;
-    width:6in;
-    height:4in;
+    width:6in; height:4in;
     flex-shrink:0;
   }
   .card-wrap img { display:block; width:6in; height:4in; object-fit:contain; }
-  .crop-b,.crop-r,.crop-bl { position:absolute; }
-  .crop-b  { top:0; right:0; }
-  .crop-r  { bottom:0; left:0; }
-  .crop-bl { bottom:0; right:0; }
-  ${cropCSS}
   @media print {
     @page { size:landscape; margin:0.5in; }
     body { margin:0; min-height:unset; }
-    .card-wrap { width:6in; height:4in; }
-    .card-wrap img { width:6in; height:4in; }
   }
 </style>
 </head><body>
 <div class="card-wrap">
+  ${cropSVG}
   <img src="${imgData}" onload="window.print(); window.close();">
-  ${cropDivs}
 </div>
 </body></html>`);
   win.document.close();
