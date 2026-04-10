@@ -143,13 +143,10 @@
     color: var(--label);
   }
 
-  /* QR + upload — side by side to save vertical space */
-  .student-work-row {
-    display: flex; gap: 8px; align-items: flex-start;
-  }
-  #qr-code { flex-shrink: 0; background: #fff; padding: 3px; line-height: 0; }
-  #qr-code img, #qr-code canvas { width: 72px !important; height: 72px !important; }
-  .upload-col { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+  /* QR full width */
+  #qr-code { background:#fff; padding:4px; line-height:0; }
+  #qr-code img, #qr-code canvas { width: 100% !important; height: auto !important; }
+
   .poll-lbl {
     font-family: var(--ui); font-size: 9px; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--label);
@@ -164,27 +161,27 @@
   }
   .upzone:hover { border-color: rgba(0,0,0,0.4); color: var(--text); }
   .upzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  #upthumb { width: 100%; height: 36px; object-fit: cover; margin-top: 4px; display: none; border-radius: 2px; }
+  #upthumb { width: 100%; height: 44px; object-fit: cover; margin-top: 4px; display: none; border-radius: 2px; }
 
   /* Filter pills */
   .filter-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .filter-pills .pill { padding: 8px 6px; font-size: 11px; }
 
-  /* Action buttons — compact row of three */
-  .action-row { display: flex; gap: 6px; }
-  .action-pill {
-    flex: 1; border: none; border-radius: 100px;
-    padding: 10px 8px;
-    font-family: var(--ui); font-size: 11px; font-weight: 900;
-    letter-spacing: 0.08em; text-transform: uppercase;
+  /* Action circles */
+  .action-row { display: flex; gap: 8px; justify-content: center; }
+  .action-circle {
+    width: 52px; height: 52px;
+    border: none; border-radius: 50%;
+    font-size: 22px; line-height: 1;
     cursor: pointer; transition: all 0.12s;
+    display: flex; align-items: center; justify-content: center;
     -webkit-tap-highlight-color: transparent;
-    text-align: center;
+    flex-shrink: 0;
   }
-  .action-pill.regen { background: var(--uc-red); color: #fff; }
-  .action-pill.regen:hover { background: #c0001e; }
-  .action-pill.dark { background: #1a1a1a; color: #fff; }
-  .action-pill.dark:hover { background: #333; }
+  .action-circle.regen { background: var(--uc-red); color: #fff; }
+  .action-circle.regen:hover { background: #c0001e; }
+  .action-circle.dark { background: #1a1a1a; color: #fff; }
+  .action-circle.dark:hover { background: #333; }
 </style>
 </head>
 <body>
@@ -237,17 +234,13 @@
 
   <div class="rpanel-sect">
     <div class="rpanel-lbl">Student Work</div>
-    <div class="student-work-row">
-      <div id="qr-code"></div>
-      <div class="upload-col">
-        <div id="poll-status" class="poll-lbl">Waiting…</div>
-        <label class="upzone">
-          <div id="uplbl">+ Upload</div>
-          <input type="file" accept="image/*" id="upin">
-          <img id="upthumb" alt="">
-        </label>
-      </div>
-    </div>
+    <div id="qr-code"></div>
+    <div id="poll-status" class="poll-lbl">Waiting…</div>
+    <label class="upzone">
+      <div id="uplbl">+ Upload</div>
+      <input type="file" accept="image/*" id="upin">
+      <img id="upthumb" alt="">
+    </label>
   </div>
 
   <div class="rpanel-sect">
@@ -273,9 +266,9 @@
 
   <div class="rpanel-sect">
     <div class="action-row">
-      <button class="action-pill regen" id="regenbtn">↻ Regen</button>
-      <button class="action-pill dark" id="pdfbtn">PDF</button>
-      <button class="action-pill dark" id="printbtn">Print</button>
+      <button class="action-circle regen" id="regenbtn" title="Regenerate">↻</button>
+      <button class="action-circle dark"  id="pdfbtn"   title="Download PDF">↓</button>
+      <button class="action-circle dark"  id="printbtn" title="Print">⎙</button>
     </div>
   </div>
 
