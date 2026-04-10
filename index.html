@@ -12,262 +12,296 @@
     --uc-red: #e00122;
     --bg: #dddbd8;
     --panel: #ffffff;
-    --border: rgba(0,0,0,0.08);
-    --label: rgba(0,0,0,0.32);
+    --border: rgba(0,0,0,0.09);
+    --label: rgba(0,0,0,0.36);
     --text: #111;
     --ui: 'gotham', sans-serif;
+    --topbar: 112px;
+    --rightpanel: 160px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
+  html, body {
+    width: 832px; height: 624px;
+    overflow: hidden;
     background: var(--bg);
     color: var(--text);
     font-family: 'gotham', sans-serif;
-    min-height: 100vh;
     display: grid;
-    grid-template-columns: 260px 1fr;
-    grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr var(--rightpanel);
+    grid-template-rows: var(--topbar) 1fr;
   }
 
-  header {
-    grid-column: 1/-1;
+  /* ── TOP BAR ── */
+  #topbar {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
     background: var(--panel);
     border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .hd-left { display: flex; align-items: baseline; gap: 16px; }
-  header h1 { font-family: var(--ui); font-weight: 900; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; }
-  header .ver { font-family: var(--ui); font-size: 10px; letter-spacing: 0.14em; color: var(--label); text-transform: uppercase; }
-  .wx-badge { display: flex; align-items: center; gap: 7px; font-family: var(--ui); font-size: 10px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--label); }
-  .wx-dot { width: 5px; height: 5px; background: #8FAF9F; border-radius: 50%; animation: blink 2s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
-
-  aside {
-    background: var(--panel);
     border-right: 1px solid var(--border);
-    overflow-y: auto;
-    display: flex; flex-direction: column;
-  }
-  .sect { padding: 18px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-  .sect:last-child { border-bottom: none; }
-  .slbl { font-family: var(--ui); font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--label); }
-
-  .plist { display: flex; flex-direction: column; gap: 3px; }
-  .pbtn {
-    background: transparent; border: 1px solid var(--border);
-    color: rgba(0,0,0,0.38); padding: 8px 11px;
-    font-family: var(--ui); font-size: 12px; font-weight: 700;
-    letter-spacing: 0.07em; text-transform: uppercase;
-    cursor: pointer; text-align: left; transition: all 0.1s;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .pbtn:hover { color: var(--text); border-color: rgba(0,0,0,0.22); background: rgba(0,0,0,0.02); }
-  .pbtn.active { color: var(--text); border-color: var(--pc,#111); background: rgba(0,0,0,0.03); }
-  .psw { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-
-  .srow { display: flex; flex-direction: column; gap: 5px; }
-  .srow label { display: flex; justify-content: space-between; font-family: var(--ui); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--label); }
-  .srow label span { color: rgba(0,0,0,0.65); font-weight: 700; }
-  input[type=range] { width: 100%; -webkit-appearance: none; height: 1.5px; background: rgba(0,0,0,0.14); outline: none; cursor: pointer; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: var(--text); border-radius: 50%; }
-
-  .fchips { display: flex; flex-wrap: wrap; gap: 4px; }
-  .fchip {
-    background: transparent; border: 1px solid var(--border);
-    color: rgba(0,0,0,0.36); padding: 4px 8px;
-    font-family: var(--ui); font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase;
-    cursor: pointer; transition: all 0.1s;
-  }
-  .fchip:hover { border-color: rgba(0,0,0,0.28); color: var(--text); }
-  .fchip.active { border-color: rgba(0,0,0,0.5); color: var(--text); background: rgba(0,0,0,0.04); }
-
-  .upzone {
-    border: 1.5px dashed rgba(0,0,0,0.16); padding: 13px; text-align: center;
-    cursor: pointer; font-family: var(--ui); font-size: 10px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--label); position: relative; transition: all 0.12s;
-  }
-  .upzone:hover { border-color: rgba(0,0,0,0.35); color: var(--text); }
-  .upzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
-  #upthumb { width: 100%; height: 55px; object-fit: cover; margin-top: 8px; display: none; }
-
-  .arow { display: flex; gap: 5px; }
-  .abtn {
-    flex: 1; border: none; padding: 11px 6px;
-    font-family: var(--ui); font-size: 10px; font-weight: 900;
-    letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; transition: all 0.12s;
-  }
-  .abtn.flip { background: #111; color: #fff; }
-  .abtn.flip:hover { background: #333; }
-  .abtn.regen { background: var(--uc-red); color: #fff; }
-  .abtn.regen:hover { background: #c0001e; }
-
-  main {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 32px; gap: 18px; position: relative;
-  }
-
-  .scene { perspective: 1400px; width: 640px; height: 494px; }
-  .flipper {
-    width: 100%; height: 100%;
-    position: relative; transform-style: preserve-3d;
-    transition: transform 0.75s cubic-bezier(0.4,0,0.2,1);
-  }
-  .flipper.flipped { transform: rotateY(180deg); }
-  .face {
-    position: absolute; inset: 0;
-    backface-visibility: hidden; -webkit-backface-visibility: hidden;
-    border-radius: 2px;
-    box-shadow: 0 6px 50px rgba(0,0,0,0.16), 0 2px 10px rgba(0,0,0,0.07);
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
     overflow: hidden;
   }
-  .face.back { transform: rotateY(180deg); }
-  canvas { display: block; width: 100%; height: 100%; }
 
-  .legend {
-    display: flex; gap: 18px; flex-wrap: wrap;
-    font-family: var(--ui); font-size: 9px; letter-spacing: 0.12em;
-    text-transform: uppercase; color: rgba(0,0,0,0.28);
+  .bar-col {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
   }
-  .legend b { color: rgba(0,0,0,0.5); font-weight: 700; }
+  .bar-col:last-child { border-right: none; }
+
+  .bar-lbl {
+    font-family: var(--ui); font-size: 8px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--label); white-space: nowrap;
+  }
+
+  #recip-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  #msg-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+  #pg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+  }
+
+  /* ── PILLS ── */
+  .pill {
+    background: rgba(0,0,0,0.04);
+    border: 1.5px solid rgba(0,0,0,0.12);
+    border-radius: 100px;
+    color: rgba(0,0,0,0.5);
+    padding: 7px 14px;
+    font-family: var(--ui); font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.12s;
+    white-space: nowrap; line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+    text-align: center;
+  }
+  .pill:hover { border-color: rgba(0,0,0,0.3); color: var(--text); background: rgba(0,0,0,0.06); }
+  .pill.active {
+    background: var(--pc, #111);
+    border-color: var(--pc, #111);
+    color: #fff;
+  }
+  .pill.active[data-r="alumni"] { color: #111; }
 
   /* Campus slider */
-  .campus-ends {
-    display: flex; justify-content: space-between;
-    font-family: var(--ui); font-size: 9px; letter-spacing: 0.18em;
+  .campus-wrap {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .campus-end-lbl {
+    font-family: var(--ui); font-size: 9px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--label); white-space: nowrap; flex-shrink: 0;
+  }
+  input[type=range] {
+    flex: 1; width: 100%; -webkit-appearance: none;
+    height: 3px; background: rgba(0,0,0,0.15);
+    outline: none; cursor: pointer; border-radius: 2px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px;
+    background: var(--text); border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  }
+
+  /* ── MAIN CANVAS AREA ── */
+  main {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* Card: 832-160=672px wide avail, 624-112=512px tall avail
+     4×6 ratio: 512*1.5=768 too wide → use height: 484px → 726px too wide
+     → use width: 660px → 440px tall */
+  .scene { width: 660px; height: 440px; }
+  .flipper { width: 100%; height: 100%; position: relative; }
+  .face {
+    position: absolute; inset: 0;
+    border-radius: 2px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+
+  /* ── RIGHT PANEL ── */
+  #rightpanel {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+    background: var(--panel);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    gap: 0; overflow: hidden;
+  }
+  .rpanel-sect {
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 7px;
+    flex-shrink: 0;
+  }
+  .rpanel-sect:last-child { border-bottom: none; }
+  .rpanel-lbl {
+    font-family: var(--ui); font-size: 8px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--label);
+  }
+
+  /* QR + upload */
+  #qr-code img, #qr-code canvas { width: 100px !important; height: 100px !important; }
+  .poll-lbl {
+    font-family: var(--ui); font-size: 8px; letter-spacing: 0.1em;
     text-transform: uppercase; color: var(--label);
-    margin-bottom: 4px;
   }
-  .campus-hint {
-    font-family: var(--ui); font-size: 9px; letter-spacing: 0.14em;
-    text-transform: uppercase; color: rgba(0,0,0,0.4);
-    text-align: center; margin-top: 5px;
+  .upzone {
+    border: 1.5px dashed rgba(0,0,0,0.2); padding: 8px;
+    text-align: center; cursor: pointer;
+    font-family: var(--ui); font-size: 9px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--label); position: relative; transition: all 0.12s;
+    border-radius: 4px;
   }
+  .upzone:hover { border-color: rgba(0,0,0,0.4); color: var(--text); }
+  .upzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  #upthumb { width: 100%; height: 36px; object-fit: cover; margin-top: 4px; display: none; border-radius: 2px; }
 
-  
-  .wtoggle { display:flex; gap:3px; }
-  .wbtn {
-    flex:1; background:transparent; border:1px solid var(--border);
-    color:rgba(0,0,0,0.38); padding:7px 6px;
-    font-family:var(--ui); font-size:10px; font-weight:700;
-    letter-spacing:0.1em; text-transform:uppercase;
-    cursor:pointer; transition:all 0.1s;
+  /* Filter pills in right panel — 2 col grid */
+  .filter-pills {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
   }
-  .wbtn:hover { color:var(--text); border-color:rgba(0,0,0,0.3); }
-  .wbtn.active { background:#111; color:#fff; border-color:#111; }
+  .filter-pills .pill { padding: 6px 6px; font-size: 9px; }
 
-  input[type=datetime-local] {
-    font-family: var(--ui); font-size: 11px; padding: 6px 8px;
-    border: 1px solid var(--border); background: #fff;
-    color: var(--text); letter-spacing: 0.04em; outline: none;
-    width: 100%; cursor: pointer;
+  /* Action buttons */
+  .action-pill {
+    width: 100%; border: none; border-radius: 100px;
+    padding: 11px 12px;
+    font-family: var(--ui); font-size: 11px; font-weight: 900;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.12s;
+    -webkit-tap-highlight-color: transparent;
   }
+  .action-pill.regen { background: var(--uc-red); color: #fff; }
+  .action-pill.regen:hover { background: #c0001e; }
+  .action-pill.dark { background: #1a1a1a; color: #fff; }
+  .action-pill.dark:hover { background: #333; }
 
-  
+  /* Cropmarks */
+  .crop-row { display: flex; align-items: center; gap: 6px; }
+  .crop-row label {
     font-family: var(--ui); font-size: 9px; letter-spacing: 0.1em;
-    color: rgba(0,0,0,0.2); text-align: right; line-height: 2; text-transform: uppercase;
+    text-transform: uppercase; color: var(--label); cursor: pointer;
   }
+  input[type=checkbox] { cursor: pointer; accent-color: #111; width: 14px; height: 14px; }
 </style>
 </head>
 <body>
+<!-- TOP BAR -->
+<div id="topbar">
 
-<header>
-  <div class="hd-left">
-    <h1>DAAP Generative Identity</h1>
-    <span class="ver">v0.5</span>
-  </div>
-</header>
-
-<aside>
-  <div class="sect">
-    <div class="slbl">Who are you sending this to?</div>
-    <div class="plist" id="recip-group">
-      <button class="pbtn active" data-r="student"  style="--pc:#B8011C"><span class="psw" style="background:#B8011C"></span>Student</button>
-      <button class="pbtn" data-r="faculty"          style="--pc:#D1B179"><span class="psw" style="background:#D1B179"></span>Faculty or Staff</button>
-      <button class="pbtn" data-r="friend"           style="--pc:#890519"><span class="psw" style="background:#890519"></span>Friend or Family</button>
-      <button class="pbtn" data-r="alumni"           style="--pc:#FCECDF"><span class="psw" style="background:#FCECDF;border:1px solid rgba(0,0,0,0.12);"></span>Alumni or Guest</button>
+  <div class="bar-col">
+    <div class="bar-lbl">Sending to</div>
+    <div class="pills" id="recip-group">
+      <button class="pill active" data-r="student"  style="--pc:#B8011C">Student</button>
+      <button class="pill" data-r="faculty"          style="--pc:#D1B179">Faculty / Staff</button>
+      <button class="pill" data-r="friend"           style="--pc:#890519">Friend / Family</button>
+      <button class="pill" data-r="alumni"           style="--pc:#FCECDF">Alumni / Guest</button>
     </div>
   </div>
 
-  <div class="sect">
-    <div class="slbl">Message</div>
-    <div class="plist" id="msg-group">
-      <button class="pbtn active" data-msg="THANK YOU!">Thank You!</button>
-      <button class="pbtn" data-msg="GRATEFUL!">Grateful!</button>
-      <button class="pbtn" data-msg="KUDOS!">Kudos!</button>
-      <button class="pbtn" data-msg="BRAVO!">Bravo!</button>
-      <button class="pbtn" data-msg="PROUD!">Proud!</button>
+  <div class="bar-col">
+    <div class="bar-lbl">Message</div>
+    <div class="pills" id="msg-group">
+      <button class="pill active" data-msg="THANKS!">Thanks!</button>
+      <button class="pill" data-msg="KUDOS!">Kudos!</button>
+      <button class="pill" data-msg="BRAVO!">Bravo!</button>
+      <button class="pill" data-msg="PROUD!">Proud!</button>
     </div>
   </div>
 
-  <div class="sect">
-    <div class="slbl">Program</div>
-    <div class="plist" id="pg">
-      <button class="pbtn active" data-p="fashion">Fashion Design</button>
-      <button class="pbtn" data-p="comdes">Communication Design</button>
-      <button class="pbtn" data-p="inddes">Industrial Design</button>
-      <button class="pbtn" data-p="mdes">Master of Design</button>
+  <div class="bar-col">
+    <div class="bar-lbl">Program</div>
+    <div class="pills" id="pg">
+      <button class="pill active" data-p="fashion">Fash</button>
+      <button class="pill" data-p="comdes">Code</button>
+      <button class="pill" data-p="inddes">Indl</button>
+      <button class="pill" data-p="mdes">MDes</button>
     </div>
   </div>
 
+</div>
 
-  <div class="sect">
-    <div class="slbl">Which side is the best side?</div>
-    <div class="campus-ends">
-      <span>West</span>
-      <span>East</span>
-    </div>
-    <input type="range" id="campus" min="-100" max="100" value="0" style="width:100%">
-    <div class="campus-hint" id="campus-hint">Center</div>
-  </div>
-
-
-
-
-  <div class="sect">
-    <div class="slbl">Student Work</div>
-    <!-- Phone upload via QR -->
-    <div class="qr-panel" id="qr-panel">
-      <div class="slbl" style="margin-bottom:8px">Scan to send from phone</div>
-      <div id="qr-code" style="background:#fff;padding:8px;display:inline-block;line-height:0;"></div>
-      <div id="poll-status" style="font-family:var(--ui);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--label);margin-top:6px;min-height:14px;">Waiting for image…</div>
-    </div>
-    <!-- Still allow manual upload as fallback -->
-    <label class="upzone" style="margin-top:8px">
-      <div id="uplbl">or drop / click to upload</div>
-      <input type="file" accept="image/*" id="upin">
-      <img id="upthumb" alt="">
-    </label>
-    <div class="slbl" style="margin-top:10px">Image Filter</div>
-    <div class="fchips" id="fchips">
-      <button class="fchip active" data-f="none">None</button>
-      <button class="fchip" data-f="pixel">Pixelate</button>
-      <button class="fchip" data-f="halftone">Halftone</button>
-      <button class="fchip" data-f="thresh">Threshold</button>
-      <button class="fchip" data-f="duotone">Duotone</button>
-    </div>
-  </div>
-
-  <div class="sect">
-    <div class="arow">
-      <button class="abtn flip" id="flipbtn">↺ Flip</button>
-      <button class="abtn regen" id="regenbtn">↻ Regen</button>
-    </div>
-    <button class="abtn" id="pdfbtn" style="background:#1a1a1a;color:#fff;width:100%;letter-spacing:0.14em;margin-top:0;">↓ Download PDF</button>
-    <button class="abtn" id="printbtn" style="background:#1a1a1a;color:#fff;width:100%;letter-spacing:0.14em;margin-top:4px;">⎙ Print</button>
-  </div>
-</aside>
-
+<!-- MAIN CANVAS -->
 <main>
   <div class="scene">
     <div class="flipper" id="flipper">
-      <div class="face front"><canvas id="front" width="1100" height="850"></canvas></div>
-      <div class="face back"><canvas id="back"  width="1100" height="850"></canvas></div>
+      <div class="face front"><canvas id="front" width="1200" height="800"></canvas></div>
     </div>
   </div>
-  <div class="dro" id="dro"></div>
 </main>
+
+<!-- RIGHT PANEL -->
+<div id="rightpanel">
+
+  <div class="rpanel-sect">
+    <div class="rpanel-lbl">Student Work</div>
+    <div id="qr-code" style="background:#fff;padding:4px;line-height:0;"></div>
+    <div id="poll-status" class="poll-lbl">Waiting…</div>
+    <label class="upzone">
+      <div id="uplbl">+ Upload</div>
+      <input type="file" accept="image/*" id="upin">
+      <img id="upthumb" alt="">
+    </label>
+  </div>
+
+  <div class="rpanel-sect">
+    <div class="rpanel-lbl">Best Side?</div>
+    <div class="campus-wrap">
+      <span class="campus-end-lbl">W</span>
+      <input type="range" id="campus" min="-100" max="100" value="0">
+      <span class="campus-end-lbl">E</span>
+    </div>
+    <div id="campus-hint" style="font-family:var(--ui);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.4);text-align:center;">Center</div>
+  </div>
+
+  <div class="rpanel-sect">
+    <div class="rpanel-lbl">Filter</div>
+    <div class="filter-pills" id="fchips">
+      <button class="pill active" data-f="none">None</button>
+      <button class="pill" data-f="pixel">Pixel</button>
+      <button class="pill" data-f="halftone">Halftone</button>
+      <button class="pill" data-f="thresh">Thresh</button>
+      <button class="pill" data-f="duotone">Duo</button>
+    </div>
+  </div>
+
+  <div class="rpanel-sect">
+    <button class="action-pill regen" id="regenbtn">↻ Regen</button>
+    <button class="action-pill dark" id="pdfbtn">↓ PDF</button>
+    <button class="action-pill dark" id="printbtn">⎙ Print</button>
+    <div class="crop-row">
+      <input type="checkbox" id="cropmarks">
+      <label for="cropmarks">Crop Marks</label>
+    </div>
+  </div>
+
+</div>
 
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────────────
@@ -345,7 +379,7 @@ const S = {
   campus: 0,
   seed: Math.random()*9999,
   img: null,
-  message: 'THANK YOU!',
+  message: 'THANKS!',
 };
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
@@ -719,50 +753,15 @@ function drawFront(){
   ctx.restore();
 }
 
-// ── DRAW BACK ─────────────────────────────────────────────────────────────────
-function drawBack(){
-  const cv=document.getElementById('back');
-  const ctx=cv.getContext('2d');
-  const W=cv.width, H=cv.height;
-
-  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
-
-  const recip=RECIP[S.recip];
-  const prog=PROG[S.program];
-
-  const grd=ctx.createRadialGradient(0,0,0,0,0,W*0.65);
-  grd.addColorStop(0,rgba(recip.primary,0.18));
-  grd.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=grd; ctx.fillRect(0,0,W,H);
-
-  ctx.font=`normal 900 110px 'gotham-ultra', 'gotham', sans-serif`;
-  ctx.fillStyle='#fff'; ctx.textAlign='center';
-  ctx.fillText('DAAP', W/2, H/2+18);
-
-  ctx.font=`300 21px 'gotham', sans-serif`;
-  ctx.fillStyle='rgba(255,255,255,0.38)';
-  ctx.fillText('COLLEGE OF DESIGN  ·  ARCHITECTURE  ·  ART & PLANNING', W/2, H/2+62);
-
-  ctx.strokeStyle=recip.primary; ctx.lineWidth=2;
-  ctx.beginPath();
-  ctx.moveTo(W/2-96, H/2+96); ctx.lineTo(W/2+96, H/2+96);
-  ctx.stroke();
-
-  ctx.font=`400 15px 'gotham', sans-serif`;
-  ctx.fillStyle=rgba(recip.primary,0.65);
-  ctx.fillText(prog.label.toUpperCase(), W/2, H/2+128);
-  ctx.textAlign='left';
-}
-
-function redraw(){ drawFront(); drawBack(); }
+function redraw(){ drawFront(); }
 
 // ── PDF DOWNLOAD ──────────────────────────────────────────────────────────────
 function downloadPDF(){
   const cv = document.getElementById('front');
   const imgData = cv.toDataURL('image/jpeg', 0.96);
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation:'landscape', unit:'in', format:[5.5, 4.25] });
-  doc.addImage(imgData, 'JPEG', 0, 0, 5.5, 4.25);
+  const doc = new jsPDF({ orientation:'landscape', unit:'in', format:[6, 4] });
+  doc.addImage(imgData, 'JPEG', 0, 0, 6, 4);
   const prog = PROG[S.program];
   const safeLabel = prog.label.replace(/\s+/g,'-').toLowerCase();
   doc.save(`daap-thankyou-${safeLabel}-seed${Math.floor(S.seed)}.pdf`);
@@ -770,26 +769,26 @@ function downloadPDF(){
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
 document.getElementById('recip-group').addEventListener('click',e=>{
-  const b=e.target.closest('.pbtn'); if(!b||!b.dataset.r) return;
-  document.querySelectorAll('#recip-group .pbtn').forEach(x=>x.classList.remove('active'));
+  const b=e.target.closest('.pill'); if(!b||!b.dataset.r) return;
+  document.querySelectorAll('#recip-group .pill').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); S.recip=b.dataset.r; redraw();
 });
 
 document.getElementById('msg-group').addEventListener('click',e=>{
-  const b=e.target.closest('.pbtn'); if(!b||!b.dataset.msg) return;
-  document.querySelectorAll('#msg-group .pbtn').forEach(x=>x.classList.remove('active'));
+  const b=e.target.closest('.pill'); if(!b||!b.dataset.msg) return;
+  document.querySelectorAll('#msg-group .pill').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); S.message=b.dataset.msg; redraw();
 });
 
 document.getElementById('pg').addEventListener('click',e=>{
-  const b=e.target.closest('.pbtn'); if(!b||!b.dataset.p) return;
-  document.querySelectorAll('#pg .pbtn').forEach(x=>x.classList.remove('active'));
+  const b=e.target.closest('.pill'); if(!b||!b.dataset.p) return;
+  document.querySelectorAll('#pg .pill').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); S.program=b.dataset.p; S.seed=Math.random()*9999; redraw();
 });
 
 document.getElementById('fchips').addEventListener('click',e=>{
-  const b=e.target.closest('.fchip'); if(!b) return;
-  document.querySelectorAll('.fchip').forEach(x=>x.classList.remove('active'));
+  const b=e.target.closest('.pill'); if(!b||!b.dataset.f) return;
+  document.querySelectorAll('#fchips .pill').forEach(x=>x.classList.remove('active'));
   b.classList.add('active'); S.filter=b.dataset.f; redraw();
 });
 
@@ -802,9 +801,7 @@ document.getElementById('campus').addEventListener('input', e=>{
   redraw();
 });
 
-document.getElementById('flipbtn').addEventListener('click',()=>{
-  document.getElementById('flipper').classList.toggle('flipped');
-});
+
 document.getElementById('regenbtn').addEventListener('click',()=>{
   S.seed=Math.random()*9999;
   S.img=null;
@@ -834,6 +831,32 @@ document.getElementById('upin').addEventListener('change',e=>{
 function printCard(){
   const cv = document.getElementById('front');
   const imgData = cv.toDataURL('image/jpeg', 0.96);
+  const showCrops = document.getElementById('cropmarks').checked;
+
+  // Cropmarks: thin lines outside card boundary with a small gap
+  const cropCSS = showCrops ? `
+    .card-wrap::before,
+    .card-wrap::after,
+    .crop-b::before,
+    .crop-b::after,
+    .crop-r::before,
+    .crop-r::after,
+    .crop-bl::before,
+    .crop-bl::after { content:''; position:absolute; background:#000; }
+    /* TL horizontal */ .card-wrap::before { top:0; left:-0.375in; width:0.25in; height:0.4pt; }
+    /* TL vertical   */ .card-wrap::after  { top:-0.375in; left:0; width:0.4pt; height:0.25in; }
+    /* TR horizontal */ .crop-b::before    { top:0; right:-0.375in; width:0.25in; height:0.4pt; }
+    /* TR vertical   */ .crop-b::after     { top:-0.375in; right:0; width:0.4pt; height:0.25in; }
+    /* BL horizontal */ .crop-r::before    { bottom:0; left:-0.375in; width:0.25in; height:0.4pt; }
+    /* BL vertical   */ .crop-r::after     { bottom:-0.375in; left:0; width:0.4pt; height:0.25in; }
+    /* BR horizontal */ .crop-bl::before   { bottom:0; right:-0.375in; width:0.25in; height:0.4pt; }
+    /* BR vertical   */ .crop-bl::after    { bottom:-0.375in; right:0; width:0.4pt; height:0.25in; }
+  ` : '';
+
+  const cropDivs = showCrops
+    ? `<div class="crop-b"></div><div class="crop-r"></div><div class="crop-bl"></div>`
+    : '';
+
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html>
 <html><head><title>DAAP Thank You Card</title>
@@ -846,20 +869,30 @@ function printCard(){
     justify-content:center;
     min-height:100vh;
   }
-  img {
-    display:block;
-    width:5.5in;
-    height:4.25in;
-    object-fit:contain;
+  .card-wrap {
+    position:relative;
+    width:6in;
+    height:4in;
+    flex-shrink:0;
   }
+  .card-wrap img { display:block; width:6in; height:4in; object-fit:contain; }
+  .crop-b,.crop-r,.crop-bl { position:absolute; }
+  .crop-b  { top:0; right:0; }
+  .crop-r  { bottom:0; left:0; }
+  .crop-bl { bottom:0; right:0; }
+  ${cropCSS}
   @media print {
-    @page { size:landscape; margin:0.25in; }
+    @page { size:landscape; margin:0.5in; }
     body { margin:0; min-height:unset; }
-    img { width:5.5in; height:4.25in; object-fit:contain; }
+    .card-wrap { width:6in; height:4in; }
+    .card-wrap img { width:6in; height:4in; }
   }
 </style>
 </head><body>
-<img src="${imgData}" onload="window.print(); window.close();">
+<div class="card-wrap">
+  <img src="${imgData}" onload="window.print(); window.close();">
+  ${cropDivs}
+</div>
 </body></html>`);
   win.document.close();
 }
