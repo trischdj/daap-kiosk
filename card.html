@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Your DAAP Card</title>
+<link rel="stylesheet" href="https://use.typekit.net/odf8bjs.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #111;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 20px;
+    font-family: 'gotham', sans-serif;
+  }
+
+  .logo {
+    font-family: 'gotham-ultra', 'gotham', sans-serif;
+    font-size: 36px; font-weight: 900;
+    color: #fff; letter-spacing: 0.06em;
+  }
+  .sub {
+    font-size: 10px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: rgba(255,255,255,0.35);
+    margin-top: -12px;
+  }
+
+  #card-img {
+    width: 100%;
+    max-width: 480px;
+    border-radius: 4px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    display: none;
+  }
+
+  .status {
+    font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: rgba(255,255,255,0.35);
+    text-align: center;
+  }
+
+  .save-btn {
+    display: none;
+    width: 100%; max-width: 480px;
+    background: #e00122; color: #fff; border: none;
+    border-radius: 100px; padding: 16px;
+    font-family: 'gotham-ultra', 'gotham', sans-serif;
+    font-size: 14px; font-weight: 900;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none;
+    text-align: center;
+  }
+
+  .hint {
+    font-size: 9px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: rgba(255,255,255,0.2);
+    text-align: center; max-width: 280px; line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo">DAAP</div>
+<div class="sub">DAPworks — Your Thank You Card</div>
+
+<img id="card-img" alt="Your DAAP card">
+<div class="status" id="status">Loading your card…</div>
+<a id="save-btn" class="save-btn" download="daap-thankyou.jpg">↓ Save to Camera Roll</a>
+<div class="hint" id="hint"></div>
+
+<script>
+async function loadCard(){
+  const status  = document.getElementById('status');
+  const cardImg = document.getElementById('card-img');
+  const saveBtn = document.getElementById('save-btn');
+  const hint    = document.getElementById('hint');
+
+  try {
+    const res = await fetch('/api/card');
+    if (!res.ok) throw new Error('Not found');
+    const data = await res.json();
+
+    if (!data.image) throw new Error('No image');
+
+    cardImg.src = data.image;
+    cardImg.style.display = 'block';
+    cardImg.onload = () => {
+      status.textContent = '';
+      saveBtn.href = data.image;
+      saveBtn.style.display = 'block';
+      hint.textContent = 'Tap Save to add to your camera roll, then share wherever you like.';
+    };
+
+  } catch(e) {
+    status.textContent = 'Card not found — please scan again from the kiosk.';
+  }
+}
+
+loadCard();
+</script>
+</body>
+</html>
