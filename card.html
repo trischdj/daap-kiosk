@@ -83,20 +83,24 @@ async function loadCard(){
   try {
     const res = await fetch('/api/card');
     if (!res.ok) throw new Error('Not found');
-    const data = await res.json();
 
-    if (!data.image) throw new Error('No image');
+    // Handle both raw JSON and stringified responses from Upstash
+    let data = await res.json();
+    if (typeof data === 'string') data = JSON.parse(data);
 
-    cardImg.src = data.image;
+    // Image might be at data.image or data.result.image
+    const image = data.image || (data.result && data.result.image);
+    if (!image) throw new Error('No image in response');
+
+    cardImg.src = image;
     cardImg.style.display = 'block';
-    cardImg.onload = () => {
-      status.textContent = '';
-      saveBtn.href = data.image;
-      saveBtn.style.display = 'block';
-      hint.textContent = 'Tap Save to add to your camera roll, then share wherever you like.';
-    };
+    status.textContent = '';
+    saveBtn.href = image;
+    saveBtn.style.display = 'block';
+    hint.textContent = 'Tap Save to add to your camera roll, then share wherever you like.';
 
   } catch(e) {
+    console.error(e);
     status.textContent = 'Card not found — please scan again from the kiosk.';
   }
 }
