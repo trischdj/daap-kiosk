@@ -188,6 +188,28 @@
 </style>
 </head>
 <body>
+<!-- SAVE QR MODAL -->
+<div id="save-modal" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.82);
+  align-items:center; justify-content:center; flex-direction:column; gap:20px;
+">
+  <div style="
+    background:#fff; border-radius:12px; padding:32px 40px;
+    display:flex; flex-direction:column; align-items:center; gap:16px;
+    box-shadow:0 8px 60px rgba(0,0,0,0.4);
+  ">
+    <div style="font-family:'gotham',sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(0,0,0,0.4);">Scan to save your card</div>
+    <div id="save-qr" style="line-height:0;"></div>
+    <div id="save-status" style="font-family:'gotham',sans-serif;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.4);">Generating…</div>
+    <button onclick="document.getElementById('save-modal').style.display='none'" style="
+      margin-top:4px; border:none; background:#111; color:#fff; border-radius:100px;
+      padding:10px 28px; font-family:'gotham',sans-serif; font-size:11px; font-weight:700;
+      letter-spacing:0.12em; text-transform:uppercase; cursor:pointer;
+    ">Close</button>
+  </div>
+</div>
+
 <!-- TOP BAR -->
 <div id="topbar">
 
@@ -729,16 +751,44 @@ function drawFront(){
 
 function redraw(){ drawFront(); }
 
-// ── PDF DOWNLOAD ──────────────────────────────────────────────────────────────
-function downloadPDF(){
-  const cv = document.getElementById('front');
-  const imgData = cv.toDataURL('image/jpeg', 0.96);
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation:'landscape', unit:'in', format:[6, 4] });
-  doc.addImage(imgData, 'JPEG', 0, 0, 6, 4);
-  const prog = PROG[S.program];
-  const safeLabel = prog.label.replace(/\s+/g,'-').toLowerCase();
-  doc.save(`daap-thankyou-${safeLabel}-seed${Math.floor(S.seed)}.pdf`);
+// ── SAVE QR — upload card to Vercel, show QR linking to card.html ────────────
+async function showSaveQR(){
+  const modal  = document.getElementById('save-modal');
+  const qrEl   = document.getElementById('save-qr');
+  const status = document.getElementById('save-status');
+
+  // Show modal immediately
+  modal.style.display = 'flex';
+  qrEl.innerHTML = '';
+  status.textContent = 'Uploading card…';
+
+  try {
+    // Export canvas as JPEG
+    const cv = document.getElementById('front');
+    const imgData = cv.toDataURL('image/jpeg', 0.92);
+
+    // Upload to /api/save (stores under 'daap:card' key)
+    const res = await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imgData, ts: Date.now() }),
+    });
+    if (!res.ok) throw new Error('Upload failed');
+
+    // QR points to /card.html which loads and displays the image
+    const cardURL = window.location.origin + '/card.html';
+    status.textContent = 'Scan to save to your phone';
+
+    new QRCode(qrEl, {
+      text: cardURL,
+      width: 220, height: 220,
+      colorDark: '#111111', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+
+  } catch(e) {
+    status.textContent = 'Error — please try again';
+  }
 }
 
 // ── CONTROLS ──────────────────────────────────────────────────────────────────
@@ -824,7 +874,7 @@ function printCard(){
 }
 
 document.getElementById('printbtn').addEventListener('click', printCard);
-document.getElementById('pdfbtn').addEventListener('click', downloadPDF);
+document.getElementById('pdfbtn').addEventListener('click', showSaveQR);
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 redraw();
