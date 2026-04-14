@@ -1,5 +1,4 @@
 // api/card.js
-// Returns the latest saved card image for card.html to display
 const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
@@ -14,7 +13,10 @@ module.exports = async function handler(req, res) {
   try {
     const data = await redis.get('daap:card');
     if (!data) return res.status(404).json({ error: 'No card found' });
-    return res.status(200).json(data);
+
+    // Upstash may return already-parsed object or a string — handle both
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+    return res.status(200).json({ image: parsed.image, ts: parsed.ts });
   } catch(e) {
     console.error(e);
     return res.status(500).json({ error: 'Server error' });
