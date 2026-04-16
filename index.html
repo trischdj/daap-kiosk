@@ -721,8 +721,8 @@ function drawFront(){
   const shapeMaxX = Math.max(...pts.map(([x])=>x));
   const shapeW    = shapeMaxX - shapeMinX;
 
-  // Target: shape width + 6px total (3px bleed each side into shape edge)
-  const bleed     = 3;
+  // Target: shape width + 40px total (20px bleed each side into shape edge)
+  const bleed     = 20;
   const targetW   = shapeW + bleed * 2;
 
   // Measure widest line at probe size, scale to targetW
