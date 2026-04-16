@@ -732,6 +732,7 @@ function drawFront(){
   const fontSize = Math.floor((targetW / maxMeasured) * probeSize);
 
   ctx.font = `normal 900 ${fontSize}px 'gotham-ultra', 'gotham', sans-serif`;
+  ctx.letterSpacing = '-0.03em';
   ctx.fillStyle = tC;
   ctx.textAlign = 'center';
 
@@ -877,9 +878,11 @@ document.getElementById('printbtn').addEventListener('click', printCard);
 document.getElementById('pdfbtn').addEventListener('click', showSaveQR);
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-redraw();
-initQR();
-pollInterval = setInterval(pollForImage, 3000);
+document.fonts.ready.then(() => {
+  redraw();
+  initQR();
+  pollInterval = setInterval(pollForImage, 3000);
+});
 </script>
 </body>
 </html>
