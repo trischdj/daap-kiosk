@@ -878,7 +878,15 @@ document.getElementById('printbtn').addEventListener('click', printCard);
 document.getElementById('pdfbtn').addEventListener('click', showSaveQR);
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-document.fonts.ready.then(() => {
+Promise.all([
+  document.fonts.load("900 48px 'gotham-ultra'"),
+  document.fonts.load("900 48px 'gotham'"),
+]).then(() => {
+  redraw();
+  initQR();
+  pollInterval = setInterval(pollForImage, 3000);
+}).catch(() => {
+  // Font failed to load — draw anyway with fallback
   redraw();
   initQR();
   pollInterval = setInterval(pollForImage, 3000);
