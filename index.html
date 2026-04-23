@@ -840,16 +840,13 @@ function printCard(){
   win.document.write(`<!DOCTYPE html>
 <html><head><title>DAAP Thank You Card</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#fff; }
-  .card-wrap { width:210mm; height:148mm; }
-  .card-wrap img { display:block; width:100%; height:100%; object-fit:contain; }
+  * { margin:0; padding:0; }
+  html, body { width:210mm; height:148mm; overflow:hidden; background:#fff; }
+  img { display:block; width:210mm; height:148mm; }
   @media print { @page { size:A5 landscape; margin:0; } }
 </style>
 </head><body>
-<div class="card-wrap">
-  <img src="${imgData}" onload="window.print(); window.close();">
-</div>
+<img src="${imgData}" onload="window.print(); window.close();">
 </body></html>`);
   win.document.close();
 }
