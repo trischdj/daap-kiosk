@@ -841,10 +841,10 @@ function printCard(){
 <html><head><title>DAAP Thank You Card</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; }
-  .card-wrap { position:relative; width:6in; height:4in; flex-shrink:0; }
-  .card-wrap img { display:block; width:6in; height:4in; object-fit:contain; }
-  @media print { @page { size:landscape; margin:0.5in; } body { margin:0; min-height:unset; } }
+  body { background:#fff; }
+  .card-wrap { width:210mm; height:148mm; }
+  .card-wrap img { display:block; width:100%; height:100%; object-fit:contain; }
+  @media print { @page { size:A5 landscape; margin:0; } }
 </style>
 </head><body>
 <div class="card-wrap">
