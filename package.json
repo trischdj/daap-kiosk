@@ -2,7 +2,32 @@
   "name": "daap-kiosk",
   "version": "1.0.0",
   "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
   "dependencies": {
     "@upstash/redis": "^1.34.0"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.daap.kiosk",
+    "productName": "DAAP Kiosk",
+    "files": [
+      "main.js",
+      "preload.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true
+    }
   }
 }
