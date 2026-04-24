@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win"
+    "build:win": "electron-builder --win"
   },
   "dependencies": {
     "@upstash/redis": "^1.34.0"
