@@ -11,6 +11,7 @@ const PRINT_OPTIONS = {
   silent: true,
   printBackground: true,
   scaleFactor: 100,
+  landscape: true,
   pageSize: { width: 215900, height: 139700 }, // micrometres: 215.9 mm wide × 139.7 mm tall (8.5 × 5.5 in)
 };
 
