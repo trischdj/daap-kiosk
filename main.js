@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // ── Change this to your actual Vercel URL ──────────────────────────────────
-const KIOSK_URL = 'https://YOUR-APP.vercel.app';
+const KIOSK_URL = 'https://daap-kiosk.vercel.app';
 // ──────────────────────────────────────────────────────────────────────────
 
 // Paper size for silent printing.
