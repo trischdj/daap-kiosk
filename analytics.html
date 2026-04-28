@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAPworks Kiosk — Analytics</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f5f4f2;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #111;
+    padding: 40px 24px 80px;
+  }
+  header {
+    display: flex; align-items: baseline; gap: 16px;
+    border-bottom: 2px solid #111;
+    padding-bottom: 16px; margin-bottom: 40px;
+  }
+  header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  header .sub { font-size: 12px; color: rgba(0,0,0,0.4); letter-spacing: 0.06em; text-transform: uppercase; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 48px; }
+  .stat {
+    background: #fff; border-radius: 8px;
+    padding: 20px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .stat .val { font-size: 42px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .stat .lbl { font-size: 11px; color: rgba(0,0,0,0.45); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 6px; }
+  h2 { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.4); margin-bottom: 14px; }
+  section { margin-bottom: 40px; }
+  .bar-group { display: flex; flex-direction: column; gap: 10px; max-width: 480px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; }
+  .bar-lbl { font-size: 13px; font-weight: 600; width: 130px; flex-shrink: 0; }
+  .bar-track { flex: 1; background: rgba(0,0,0,0.07); border-radius: 4px; height: 18px; overflow: hidden; }
+  .bar-fill { height: 100%; background: #e00122; border-radius: 4px; transition: width 0.4s ease; min-width: 2px; }
+  .bar-count { font-size: 13px; color: rgba(0,0,0,0.5); width: 36px; text-align: right; flex-shrink: 0; }
+  .photo-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .photo-card {
+    background: #fff; border-radius: 8px; padding: 20px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07); min-width: 160px;
+  }
+  .photo-card .val { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
+  .photo-card .lbl { font-size: 11px; color: rgba(0,0,0,0.45); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 6px; }
+  .error { color: #e00122; font-size: 14px; padding: 16px 0; }
+  .loading { color: rgba(0,0,0,0.4); font-size: 14px; padding: 16px 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DAPworks Kiosk</h1>
+  <span class="sub">Analytics</span>
+</header>
+
+<div id="content"><p class="loading">Loading…</p></div>
+
+<script>
+async function load() {
+  const el = document.getElementById('content');
+  try {
+    const res = await fetch('/api/analytics?key=daap2025');
+    if (!res.ok) throw new Error('Failed to load analytics');
+    const d = await res.json();
+
+    const savesNoPhoto  = (d['analytics:total_saves']  || 0) - (d['analytics:saves_with_photo']  || 0);
+    const printsNoPhoto = (d['analytics:total_prints'] || 0) - (d['analytics:prints_with_photo'] || 0);
+
+    const recipients = [
+      { key: 'analytics:recipient:student', label: 'Student' },
+      { key: 'analytics:recipient:faculty', label: 'Faculty / Staff' },
+      { key: 'analytics:recipient:friend',  label: 'Friend / Family' },
+      { key: 'analytics:recipient:alumni',  label: 'Alumni / Guest' },
+    ];
+    const messages = [
+      { key: 'analytics:message:THANKS!', label: 'Thanks!' },
+      { key: 'analytics:message:KUDOS!',  label: 'Kudos!' },
+      { key: 'analytics:message:BRAVO!',  label: 'Bravo!' },
+      { key: 'analytics:message:PROUD!',  label: 'Proud!' },
+    ];
+    const programs = [
+      { key: 'analytics:program:fashion', label: 'Fashion Design' },
+      { key: 'analytics:program:comdes',  label: 'Communication Design' },
+      { key: 'analytics:program:inddes',  label: 'Industrial Design' },
+      { key: 'analytics:program:mdes',    label: 'Master of Design' },
+    ];
+
+    function barSection(title, items) {
+      const max = Math.max(1, ...items.map(i => d[i.key] || 0));
+      const rows = items.map(({ key, label }) => {
+        const val = d[key] || 0;
+        const pct = Math.round((val / max) * 100);
+        return `<div class="bar-row">
+          <span class="bar-lbl">${label}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <span class="bar-count">${val}</span>
+        </div>`;
+      }).join('');
+      return `<section><h2>${title}</h2><div class="bar-group">${rows}</div></section>`;
+    }
+
+    el.innerHTML = `
+      <section>
+        <h2>Overview</h2>
+        <div class="grid">
+          <div class="stat"><div class="val">${d['analytics:total_saves']  || 0}</div><div class="lbl">Total Saves</div></div>
+          <div class="stat"><div class="val">${d['analytics:total_prints'] || 0}</div><div class="lbl">Total Prints</div></div>
+          <div class="stat"><div class="val">${d['analytics:total_uploads']|| 0}</div><div class="lbl">Photo Uploads</div></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Photo Breakdown</h2>
+        <div class="photo-row">
+          <div class="photo-card"><div class="val">${d['analytics:saves_with_photo']  || 0}</div><div class="lbl">Saves with photo</div></div>
+          <div class="photo-card"><div class="val">${Math.max(0, savesNoPhoto)}</div><div class="lbl">Saves without photo</div></div>
+          <div class="photo-card"><div class="val">${d['analytics:prints_with_photo'] || 0}</div><div class="lbl">Prints with photo</div></div>
+          <div class="photo-card"><div class="val">${Math.max(0, printsNoPhoto)}</div><div class="lbl">Prints without photo</div></div>
+        </div>
+      </section>
+
+      ${barSection('By Recipient', recipients)}
+      ${barSection('By Message', messages)}
+      ${barSection('By Program', programs)}
+    `;
+  } catch(e) {
+    el.innerHTML = `<p class="error">${e.message}</p>`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>
