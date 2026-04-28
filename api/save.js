@@ -19,11 +19,13 @@ module.exports = async function handler(req, res) {
 
     // Analytics — fire-and-forget so a Redis hiccup never breaks the save
     try {
+      const today = new Date().toISOString().slice(0, 10);
       const incrKeys = [
         'analytics:total_saves',
         `analytics:recipient:${recip}`,
         `analytics:message:${message}`,
         `analytics:program:${program}`,
+        `analytics:saves:${today}`,
       ];
       if (hasPhoto) incrKeys.push('analytics:saves_with_photo');
       await Promise.all(incrKeys.map(k => redis.incr(k)));
