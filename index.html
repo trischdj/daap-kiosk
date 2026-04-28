@@ -768,7 +768,11 @@ async function showSaveQR(){
     const res = await fetch('/api/save', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: imgData, ts: Date.now() }),
+      body: JSON.stringify({
+        image: imgData, ts: Date.now(),
+        recip: S.recip, message: S.message, program: S.program,
+        hasPhoto: !!S.img,
+      }),
     });
     if (!res.ok) throw new Error('Upload failed');
 
@@ -833,6 +837,13 @@ function doRegen(){
 document.getElementById('regenpill').addEventListener('click', doRegen);
 
 function printCard(){
+  // Fire-and-forget analytics — don't block the print flow
+  fetch('/api/print', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hasPhoto: !!S.img }),
+  }).catch(() => {});
+
   const cv = document.getElementById('front');
   const imgData = cv.toDataURL('image/jpeg', 0.96);
 
