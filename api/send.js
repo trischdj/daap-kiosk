@@ -22,7 +22,11 @@ module.exports = async function handler(req, res) {
 
     // Analytics
     try {
-      await redis.incr('analytics:total_uploads');
+      const today = new Date().toISOString().slice(0, 10);
+      await Promise.all([
+        redis.incr('analytics:total_uploads'),
+        redis.incr(`analytics:uploads:${today}`),
+      ]);
     } catch(ae) {
       console.error('analytics error', ae);
     }

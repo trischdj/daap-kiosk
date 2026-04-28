@@ -12,7 +12,8 @@ module.exports = async function handler(req, res) {
   }
   try {
     const { hasPhoto } = req.body;
-    const incrKeys = ['analytics:total_prints'];
+    const today = new Date().toISOString().slice(0, 10);
+    const incrKeys = ['analytics:total_prints', `analytics:prints:${today}`];
     if (hasPhoto) incrKeys.push('analytics:prints_with_photo');
     await Promise.all(incrKeys.map(k => redis.incr(k)));
     return res.status(200).json({ ok: true });

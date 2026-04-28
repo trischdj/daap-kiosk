@@ -6,7 +6,7 @@ const redis = new Redis({
   token: process.env.KV_REST_API_TOKEN,
 });
 
-const KEYS = [
+const STATIC_KEYS = [
   'analytics:total_saves',
   'analytics:total_prints',
   'analytics:total_uploads',
@@ -26,6 +26,16 @@ const KEYS = [
   'analytics:program:mdes',
 ];
 
+function last30Days() {
+  const dates = [];
+  for (let i = 0; i < 30; i++) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+  return dates;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -34,11 +44,21 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
-    const values = await redis.mget(...KEYS);
+    const dates = last30Days();
+    const dateKeys = dates.flatMap(d => [
+      `analytics:saves:${d}`,
+      `analytics:prints:${d}`,
+      `analytics:uploads:${d}`,
+    ]);
+
+    const allKeys = [...STATIC_KEYS, ...dateKeys];
+    const values = await redis.mget(...allKeys);
+
     const data = {};
-    KEYS.forEach((key, i) => {
+    allKeys.forEach((key, i) => {
       data[key] = values[i] ? parseInt(values[i], 10) : 0;
     });
+
     return res.status(200).json(data);
   } catch(e) {
     console.error(e);

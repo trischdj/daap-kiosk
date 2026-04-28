@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DAPworks Kiosk — Analytics</title>
+<title>Kiosk Analytics</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -31,7 +31,7 @@
   section { margin-bottom: 40px; }
   .bar-group { display: flex; flex-direction: column; gap: 10px; max-width: 480px; }
   .bar-row { display: flex; align-items: center; gap: 12px; }
-  .bar-lbl { font-size: 13px; font-weight: 600; width: 130px; flex-shrink: 0; }
+  .bar-lbl { font-size: 13px; font-weight: 600; width: 160px; flex-shrink: 0; }
   .bar-track { flex: 1; background: rgba(0,0,0,0.07); border-radius: 4px; height: 18px; overflow: hidden; }
   .bar-fill { height: 100%; background: #e00122; border-radius: 4px; transition: width 0.4s ease; min-width: 2px; }
   .bar-count { font-size: 13px; color: rgba(0,0,0,0.5); width: 36px; text-align: right; flex-shrink: 0; }
@@ -42,6 +42,15 @@
   }
   .photo-card .val { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; }
   .photo-card .lbl { font-size: 11px; color: rgba(0,0,0,0.45); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 6px; }
+  table { width: 100%; max-width: 560px; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  thead tr { background: #111; color: #fff; }
+  th { padding: 10px 16px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; text-align: left; font-weight: 600; }
+  td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafaf9; }
+  td.num { text-align: right; font-weight: 600; color: #e00122; }
+  td.zero { color: rgba(0,0,0,0.25); }
+  .note { font-size: 11px; color: rgba(0,0,0,0.35); margin-top: 10px; letter-spacing: 0.04em; }
   .error { color: #e00122; font-size: 14px; padding: 16px 0; }
   .loading { color: rgba(0,0,0,0.4); font-size: 14px; padding: 16px 0; }
 </style>
@@ -49,8 +58,7 @@
 <body>
 
 <header>
-  <h1>DAPworks Kiosk</h1>
-  <span class="sub">Analytics</span>
+  <h1>Kiosk Analytics</h1>
 </header>
 
 <div id="content"><p class="loading">Loading…</p></div>
@@ -63,8 +71,8 @@ async function load() {
     if (!res.ok) throw new Error('Failed to load analytics');
     const d = await res.json();
 
-    const savesNoPhoto  = (d['analytics:total_saves']  || 0) - (d['analytics:saves_with_photo']  || 0);
-    const printsNoPhoto = (d['analytics:total_prints'] || 0) - (d['analytics:prints_with_photo'] || 0);
+    const savesNoPhoto  = Math.max(0, (d['analytics:total_saves']  || 0) - (d['analytics:saves_with_photo']  || 0));
+    const printsNoPhoto = Math.max(0, (d['analytics:total_prints'] || 0) - (d['analytics:prints_with_photo'] || 0));
 
     const recipients = [
       { key: 'analytics:recipient:student', label: 'Student' },
@@ -99,6 +107,35 @@ async function load() {
       return `<section><h2>${title}</h2><div class="bar-group">${rows}</div></section>`;
     }
 
+    // Build daily table — only show days with any activity
+    function formatDate(iso) {
+      const [y, m, day] = iso.split('-');
+      const date = new Date(Date.UTC(+y, +m - 1, +day));
+      return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+    }
+
+    const dailyRows = [];
+    for (const key of Object.keys(d)) {
+      const m = key.match(/^analytics:saves:(\d{4}-\d{2}-\d{2})$/);
+      if (!m) continue;
+      const date = m[1];
+      const saves   = d[`analytics:saves:${date}`]   || 0;
+      const prints  = d[`analytics:prints:${date}`]  || 0;
+      const uploads = d[`analytics:uploads:${date}`] || 0;
+      if (saves + prints + uploads === 0) continue;
+      dailyRows.push({ date, saves, prints, uploads });
+    }
+    dailyRows.sort((a, b) => b.date.localeCompare(a.date));
+
+    const tableRows = dailyRows.length
+      ? dailyRows.map(r => `<tr>
+          <td>${formatDate(r.date)}</td>
+          <td class="num ${r.saves   === 0 ? 'zero' : ''}">${r.saves}</td>
+          <td class="num ${r.prints  === 0 ? 'zero' : ''}">${r.prints}</td>
+          <td class="num ${r.uploads === 0 ? 'zero' : ''}">${r.uploads}</td>
+        </tr>`).join('')
+      : `<tr><td colspan="4" style="color:rgba(0,0,0,0.3);text-align:center;padding:20px;">No activity yet</td></tr>`;
+
     el.innerHTML = `
       <section>
         <h2>Overview</h2>
@@ -110,12 +147,21 @@ async function load() {
       </section>
 
       <section>
+        <h2>Activity by Day</h2>
+        <table>
+          <thead><tr><th>Date</th><th>Saves</th><th>Prints</th><th>Uploads</th></tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+        <p class="note">Dates are UTC. Last 30 days shown.</p>
+      </section>
+
+      <section>
         <h2>Photo Breakdown</h2>
         <div class="photo-row">
           <div class="photo-card"><div class="val">${d['analytics:saves_with_photo']  || 0}</div><div class="lbl">Saves with photo</div></div>
-          <div class="photo-card"><div class="val">${Math.max(0, savesNoPhoto)}</div><div class="lbl">Saves without photo</div></div>
+          <div class="photo-card"><div class="val">${savesNoPhoto}</div><div class="lbl">Saves without photo</div></div>
           <div class="photo-card"><div class="val">${d['analytics:prints_with_photo'] || 0}</div><div class="lbl">Prints with photo</div></div>
-          <div class="photo-card"><div class="val">${Math.max(0, printsNoPhoto)}</div><div class="lbl">Prints without photo</div></div>
+          <div class="photo-card"><div class="val">${printsNoPhoto}</div><div class="lbl">Prints without photo</div></div>
         </div>
       </section>
 
