@@ -325,9 +325,11 @@ let pollInterval = null;
 
 async function pollForImage() {
   try {
-    const res = await fetch('/api/receive');
+    const res = await fetch('/api/receive?ts=' + lastTs);
     if (!res.ok) return;
     const data = await res.json();
+
+    if (data.same) return;
 
     if (data && data.ts && data.ts !== lastTs && data.image) {
       lastTs = data.ts;
