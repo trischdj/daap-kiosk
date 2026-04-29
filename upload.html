@@ -207,7 +207,6 @@ const status      = document.getElementById('status');
 // ── FILE HANDLING ─────────────────────────────────────────────────────────────
 function handleFile(file) {
   if (!file) return;
-  // Resize to max 1200px wide before encoding — keeps payload small
   const reader = new FileReader();
   reader.onload = ev => {
     const img = new Image();
@@ -218,7 +217,7 @@ function handleFile(file) {
       canvas.width  = Math.round(img.width  * scale);
       canvas.height = Math.round(img.height * scale);
       canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      imageBase64 = canvas.toDataURL('image/jpeg', 0.82);
+      imageBase64 = canvas.toDataURL('image/jpeg', 0.80);
 
       preview.src = imageBase64;
       preview.style.display = 'block';

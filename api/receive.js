@@ -18,6 +18,12 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ image: null, ts: null });
     }
 
+    // If the client already has this image, skip sending it again
+    const clientTs = parseInt(req.query.ts, 10);
+    if (clientTs && clientTs === data.ts) {
+      return res.status(200).json({ same: true });
+    }
+
     return res.status(200).json(data);
   } catch (e) {
     console.error(e);
